@@ -36,6 +36,8 @@ function watch_load(loadavg_filename, FieldToWatch)
 
 	if file == nil then
 		print("Unable to open the file!")
+
+		return nil
 	else
 		local first_line = file:read()
 
@@ -54,6 +56,8 @@ function watch_load(loadavg_filename, FieldToWatch)
 		end
 
 		print(FieldToWatch .. "th field: " .. resulting_table[FieldToWatch])
+
+		return tonumber(resulting_table[FieldToWatch])
 	end
 end
 
@@ -69,5 +73,10 @@ local inits = ini_read(arg[0]:gsub("%.lua$", ".ini")) -- Read ini file
 -- Gets the system load filename
 local loadavg_filename = inits["LoadAVG"] == nil and "/proc/loadavg" or inits["LoadAVG"]
 local FieldToWatch = inits["FieldToWatch"] == nil and 3 or inits["FieldToWatch"]
+local TriggerLevel = inits["TriggerLevel"] == nil and 0.00 or inits["TriggerLevel"]
 
-watch_load(loadavg_filename, FieldToWatch)
+local currVal = watch_load(loadavg_filename, FieldToWatch)
+
+if currVal >= TriggerLevel then
+	print("Alert level!")
+end
