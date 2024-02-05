@@ -20,7 +20,7 @@ function ini_read(FileName)
 			if value == nil then
 				value = ""
 			end
-			couples[key] = tonumber(value) or value
+			couples[key] = tonumber(value) or value:gsub("\"", "")
 			print(key .. "=" .. value)
 		end
 	end
@@ -36,7 +36,8 @@ end
 
 local inits = ini_read(arg[0]:gsub("%.lua$", ".ini"))
 
-local file = io.open("/proc/loadavg", "r")
+local loadavg_filename = inits["LoadAVG"] == nil and "/proc/loadavg" or inits["LoadAVG"]
+local file = io.open(loadavg_filename, "r")
 
 if file == nil then
 	print("Impossible d'ouvrir le fichier !")
