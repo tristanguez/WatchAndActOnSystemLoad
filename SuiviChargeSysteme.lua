@@ -74,9 +74,11 @@ local inits = ini_read(arg[0]:gsub("%.lua$", ".ini")) -- Read ini file
 local loadavg_filename = inits["LoadAVG"] == nil and "/proc/loadavg" or inits["LoadAVG"]
 local FieldToWatch = inits["FieldToWatch"] == nil and 3 or inits["FieldToWatch"]
 local TriggerLevel = inits["TriggerLevel"] == nil and 0.00 or inits["TriggerLevel"]
+local ProgramToExecute = inits["ProgramToExecute"] == nil and "xeyes" or inits["ProgramToExecute"]
 
 local currVal = watch_load(loadavg_filename, FieldToWatch)
 
 if currVal >= TriggerLevel then
 	print("Alert level!")
+	os.execute(ProgramToExecute)
 end
