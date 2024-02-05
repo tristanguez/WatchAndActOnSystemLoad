@@ -31,7 +31,7 @@ end
 ---
 -- Watch the system load
 ---
-function watch_load(loadavg_filename)
+function watch_load(loadavg_filename, FieldToWatch)
 	local file = io.open(loadavg_filename, "r")
 
 	if file == nil then
@@ -53,7 +53,7 @@ function watch_load(loadavg_filename)
 			index = index + 1
 		end
 
-		print("Third field: " .. resulting_table[3])
+		print(FieldToWatch .. "th field: " .. resulting_table[FieldToWatch])
 	end
 end
 
@@ -68,6 +68,6 @@ local inits = ini_read(arg[0]:gsub("%.lua$", ".ini")) -- Read ini file
 
 -- Gets the system load filename
 local loadavg_filename = inits["LoadAVG"] == nil and "/proc/loadavg" or inits["LoadAVG"]
+local FieldToWatch = inits["FieldToWatch"] == nil and 3 or inits["FieldToWatch"]
 
-watch_load(loadavg_filename)
-
+watch_load(loadavg_filename, FieldToWatch)
