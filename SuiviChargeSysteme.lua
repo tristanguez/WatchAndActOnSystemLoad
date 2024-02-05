@@ -34,7 +34,7 @@ end
 --
 --
 
-local inits = ini_read("SuiviChargeSysteme.ini")
+local inits = ini_read(arg[0]:gsub("%.lua$", ".ini"))
 
 local file = io.open("/proc/loadavg", "r")
 
