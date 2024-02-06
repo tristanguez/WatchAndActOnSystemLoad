@@ -1,4 +1,8 @@
--- Suivi de charge systeme
+--
+-- Watch System Load and Trigger an external program if a Threshold is reached
+--
+-- License SPDX-Licence-Identifier: LGPL-3.0-only or CeCill-C in France/Europe
+-- SPDX-FileCopyrightText: 2024 Tristan Guez tristan.guez@gmail.com
 --
 
 ---
