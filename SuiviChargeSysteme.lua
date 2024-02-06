@@ -7,6 +7,7 @@
 function ini_read(FileName)
 	local inifile = io.open(FileName, "r")
 
+	print("-- Begin reading ini file --")
 	if inifile == nil then
 		return {}
 	end
@@ -14,16 +15,21 @@ function ini_read(FileName)
 	local couples = {}
 
 	for line in inifile:lines() do
-		local key, value = line:match("(%S+)%s*=%s*(%S+)") -- S: non-space s: space +: at least one *: 0 or more
+		 -- S: non-space s: space +: at least one *: 0 or more []: optional
+		local key, value = line:match('([%S^=]+)=["]*(.*[^"])["]*')
 
-		if key then
+		if key == nil then
+			print("line skipped: " .. line)
+		else
 			if value == nil then
 				value = ""
 			end
-			couples[key] = tonumber(value) or value:gsub("\"", "")
-			-- print(key .. "=" .. value)
+			couples[key] = tonumber(value) or value
+			print(key .. "=" .. couples[key])
 		end
 	end
+
+	print("-- End reading ini file --")
 
 	return couples
 end
@@ -62,6 +68,10 @@ function watch_load(loadavg_filename, FieldToWatch)
 end
 
 
+local function LoadWithDefVal(inits, key, defval)
+	return inits[key] == nil and defval or inits[key]
+end
+
 --
 --
 -- Main
@@ -71,14 +81,24 @@ end
 local inits = ini_read(arg[0]:gsub("%.lua$", ".ini")) -- Read ini file
 
 -- Gets the system load filename
-local loadavg_filename = inits["LoadAVG"] == nil and "/proc/loadavg" or inits["LoadAVG"]
-local FieldToWatch = inits["FieldToWatch"] == nil and 3 or inits["FieldToWatch"]
-local TriggerLevel = inits["TriggerLevel"] == nil and 0.00 or inits["TriggerLevel"]
-local ProgramToExecute = inits["ProgramToExecute"] == nil and "xeyes" or inits["ProgramToExecute"]
+local loadavg_filename = LoadWithDefVal(inits, "LoadAVG", "/proc/loadavg")
+local FieldToWatch = LoadWithDefVal(inits, "FieldToWatch", 3)
+local TriggerLevel = LoadWithDefVal(inits, "TriggerLevel", 0.00)
+local ProgramToExecute = LoadWithDefVal(inits, "ProgramToExecute", "xeyes")
+local SleepProg = LoadWithDefVal(inits, "SleepProg", "sleep 2")
 
-local currVal = watch_load(loadavg_filename, FieldToWatch)
+print("loadavg_filename=" .. loadavg_filename)
+print("FieldToWatch=" .. FieldToWatch)
+print("TriggerLevel=" .. TriggerLevel)
+print("ProgramToExecute=" .. ProgramToExecute)
+print("SleepProg=" .. SleepProg)
 
-if currVal >= TriggerLevel then
-	print("Alert level!")
-	os.execute(ProgramToExecute)
-end
+repeat
+	local currVal = watch_load(loadavg_filename, FieldToWatch)
+
+	if currVal >= TriggerLevel then
+		print("Alert level!")
+		os.execute(ProgramToExecute)
+	end
+	os.execute(SleepProg)
+until false
