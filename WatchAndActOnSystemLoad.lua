@@ -8,35 +8,7 @@
 ---
 -- Utilities
 ---
-function ini_read(FileName)
-	local inifile = io.open(FileName, "r")
-
-	print("-- Begin reading ini file --")
-	if inifile == nil then
-		return {}
-	end
-
-	local couples = {}
-
-	for line in inifile:lines() do
-		 -- S: non-space s: space +: at least one *: 0 or more []: optional
-		local key, value = line:match('([%S^=]+)=["]*(.*[^"])["]*')
-
-		if key == nil then
-			print("line skipped: " .. line)
-		else
-			if value == nil then
-				value = ""
-			end
-			couples[key] = tonumber(value) or value
-			print(key .. "=" .. couples[key])
-		end
-	end
-
-	print("-- End reading ini file --")
-
-	return couples
-end
+local ini = require("ManageINIfiles")
 
 ---
 -- Watch the system load
@@ -71,25 +43,20 @@ function watch_load(loadavg_filename, FieldToWatch)
 	end
 end
 
+-- ----------------------------------
+--
+--		Main
+--
+-- ----------------------------------
 
-local function LoadWithDefVal(inits, key, defval)
-	return inits[key] == nil and defval or inits[key]
-end
-
---
---
--- Main
---
---
-
-local inits = ini_read(arg[0]:gsub("%.lua$", ".ini")) -- Read ini file
+ini.init_module()
 
 -- Gets the system load filename
-local loadavg_filename = LoadWithDefVal(inits, "LoadAVG", "/proc/loadavg")
-local FieldToWatch = LoadWithDefVal(inits, "FieldToWatch", 3)
-local TriggerLevel = LoadWithDefVal(inits, "TriggerLevel", 0.00)
-local ProgramToExecute = LoadWithDefVal(inits, "ProgramToExecute", "xeyes")
-local SleepProg = LoadWithDefVal(inits, "SleepProg", "sleep 2")
+local loadavg_filename = ini.LoadWithDefVal("LoadAVG", "/proc/loadavg")
+local FieldToWatch = ini.LoadWithDefVal("FieldToWatch", 3)
+local TriggerLevel = ini.LoadWithDefVal("TriggerLevel", 0.00)
+local ProgramToExecute = ini.LoadWithDefVal("ProgramToExecute", "xeyes")
+local SleepProg = ini.LoadWithDefVal("SleepProg", "sleep 2")
 
 print("loadavg_filename=" .. loadavg_filename)
 print("FieldToWatch=" .. FieldToWatch)
