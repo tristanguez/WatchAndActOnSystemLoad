@@ -1,4 +1,5 @@
 License SPDX-Licence-Identifier: LGPL-3.0-only or CeCill-C in France/Europe
+
 SPDX-FileCopyrightText: 2024 Tristan Guez tristan.guez@gmail.com
 
 This sample code monitor the Linux system load and trigger an action if a threshold is reached.
